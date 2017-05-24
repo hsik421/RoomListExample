@@ -26,41 +26,27 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new MainAdapter();
         recyclerView.setAdapter(adapter);
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddDialog dialog = new AddDialog(MainActivity.this);
-                dialog.setClickListener(new AddDialog.DialogBtnClickListener() {
+        findViewById(R.id.fab).setOnClickListener(v -> {
+            AddDialog dialog = new AddDialog(MainActivity.this);
+            dialog.setClickListener(user -> {
+                dialog.dismiss();
+                new AsyncTask<Void,Void,Void>(){
                     @Override
-                    public void positiveClick(User user) {
-                        dialog.dismiss();
-                        new AsyncTask<Void,Void,Void>(){
-                            @Override
-                            protected Void doInBackground(Void... params) {
-                                dababase.userDao().insertUser(user);
-                                users = dababase.userDao().getAll();
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                super.onPostExecute(aVoid);
-                                adapter.insertUsers(users,users.size());
-                            }
-                        }.execute();
+                    protected Void doInBackground(Void... params) {
+                        dababase.userDao().insertUser(user);
+                        users = dababase.userDao().getAll();
+                        return null;
                     }
                     @Override
-                    public void negativeClick() {
-                        dialog.dismiss();
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        adapter.insertUsers(users,users.size());
                     }
-                });
-                dialog.show();
-
-            }
+                }.execute();
+            });
+            dialog.show();
         });
-        adapter.setClickListener(new MainAdapter.OnLongClickListener() {
-            @Override
-            public void onLongClick(final int position, final User user) {
+        adapter.setClickListener((position, user) ->{
                 new AsyncTask<Void,Void,Void>(){
                     @Override
                     protected Void doInBackground(Void... params) {
@@ -68,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                         users.remove(position);
                         return null;
                     }
-
                     @Override
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
@@ -76,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }.execute();
 
-            }
-        });
+            });
+
 
     }
     private void initializeDb(final Context context){

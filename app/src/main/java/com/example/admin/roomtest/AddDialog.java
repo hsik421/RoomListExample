@@ -59,7 +59,7 @@ public class AddDialog extends Dialog implements View.OnClickListener{
                 clickListener.positiveClick(user);
                 break;
             case R.id.negative_btn:
-                clickListener.negativeClick();
+                dismiss();
                 break;
         }
     }
@@ -75,7 +75,6 @@ public class AddDialog extends Dialog implements View.OnClickListener{
 
     interface DialogBtnClickListener{
         void positiveClick(User user);
-        void negativeClick();
     }
 
 }
